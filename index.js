@@ -1,9 +1,10 @@
 let JsonDiffPatch = require('jsondiffpatch'),
-  semver = require('semver');
+  semver = require('semver'),
+  mongoose = require('mongoose');
 
 let historyPlugin = (options = {}) => {
   let pluginOptions = {
-    mongoose: false, // A mongoose instance
+    connection: false, // A mongoose connection instance
     modelName: '__histories', // Name of the collection for the histories
     embeddedDocument: false, // Is this a sub document
     embeddedModelName: '', // Name of model if used with embedded document
@@ -31,11 +32,11 @@ let historyPlugin = (options = {}) => {
 
   Object.assign(pluginOptions, options);
 
-  if (pluginOptions.mongoose === false) {
-    throw new Error('You need to pass a mongoose instance');
+  if (pluginOptions.connection === false) {
+    throw new Error('You need to pass a mongoose connection instance');
   }
 
-  let mongoose = pluginOptions.mongoose;
+  let connection = pluginOptions.connection;
 
   const collectionIdType = options.collectionIdType || mongoose.Schema.Types.ObjectId;
   const userCollectionIdType = options.userCollectionIdType || mongoose.Schema.Types.ObjectId;
@@ -75,7 +76,7 @@ let historyPlugin = (options = {}) => {
     next();
   });
 
-  let Model = mongoose.model(pluginOptions.modelName, Schema);
+  let Model = connection.model(pluginOptions.modelName, Schema);
 
   let getModelName = (defaultName) => {
     return pluginOptions.embeddedDocument ? pluginOptions.embeddedModelName : defaultName;
