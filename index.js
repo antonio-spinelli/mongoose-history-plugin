@@ -76,7 +76,10 @@ let historyPlugin = (options = {}) => {
     next();
   });
 
-  let Model = connection.model(pluginOptions.modelName, Schema);
+  let Model = connection.models[pluginOptions.modelName]
+  if (!Model) {
+    Model = connection.model(pluginOptions.modelName, Schema);
+  }
 
   let getModelName = (defaultName) => {
     return pluginOptions.embeddedDocument ? pluginOptions.embeddedModelName : defaultName;
